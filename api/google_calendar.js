@@ -1,4 +1,3 @@
-// garante que o .env seja carregado mesmo se este arquivo for usado direto
 require("dotenv").config();
 
 const { google } = require("googleapis");

@@ -27,7 +27,7 @@ const scopes = ["https://www.googleapis.com/auth/calendar"];
 
 const authUrl = oauth2Client.generateAuthUrl({
   access_type: "offline",
-  prompt: "consent", // IMPORTANTÍSSIMO pra garantir refresh_token
+  prompt: "consent",
   scope: scopes,
 });
 
