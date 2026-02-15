@@ -1,2 +1,4 @@
+auth
 node_modules
+client_secret_google_api.json
 .env
