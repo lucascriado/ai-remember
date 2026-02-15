@@ -4,7 +4,7 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = requi
 const P = require("pino");
 const qrcode = require("qrcode-terminal");
 
-const { parseEventFromText } = require("./api/chrono");
+const { parseEventFromText } = require("./api/ollama_ai");
 const { createCalendarEvent } = require("./api/google_calendar");
 
 function getTextFromMessage(msg) {
@@ -59,22 +59,16 @@ async function start() {
 
       const textLower = textRaw.toLowerCase();
 
-      // opcional: só responder quando VOCÊ mandar
-      // if (!m.key?.fromMe) continue;
+      if (!textLower.startsWith("rmd")) continue;
 
-      // comando precisa COMEÇAR com brme
-      if (!textLower.startsWith("brme")) continue;
-
-      // remove "brme" do começo
       const payload = textRaw.slice(4).trim();
       if (!payload) {
         await sock.sendMessage(jid, {
-          text: "Me diga o evento. Ex: brme amanhã 14h reunião com João"
+          text: "Me diga o evento. Ex: rmd amanhã 14h reunião com João"
         });
         continue;
       }
 
-      // log útil
       console.log(JSON.stringify({
         jid,
         isGroup: (jid || "").endsWith("@g.us"),
@@ -85,13 +79,10 @@ async function start() {
       }, null, 2));
 
       try {
-        // 1) interpretar texto -> evento JSON
         const ev = await parseEventFromText(payload, { timezone: "America/Sao_Paulo" });
 
-        // 2) criar evento no Google Calendar
         const created = await createCalendarEvent(ev, "primary");
 
-        // 3) responder no WhatsApp
         const reply =
           `✅ Evento criado!\n` +
           `📌 ${ev.title}\n` +
